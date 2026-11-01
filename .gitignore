@@ -1,0 +1,31 @@
+# Large binary video files (distributed via GitHub Releases)
+*.mp4
+*.mkv
+*.webm
+*.avi
+*.mov
+
+# Keep thumbnail previews in assets/
+!assets/thumbnails/*.jpg
+!assets/thumbnails/*.png
+
+# Python build caches
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Build artifacts & temp
+/tmp/
+/output/
+vfx_frames/
+clips/
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

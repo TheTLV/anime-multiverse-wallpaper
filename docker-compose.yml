@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Service 1: Background live wallpaper player with GPU display passthrough
+  wallpaper-player:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anime-wallpaper-player
+    restart: unless-stopped
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-0}
+      - XDG_RUNTIME_DIR=/tmp/runtime-dir
+    volumes:
+      # X11 and Wayland display sockets
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ${XDG_RUNTIME_DIR:-/run/user/1000}:/tmp/runtime-dir:ro
+      # Wallpaper video volume
+      - ${HOME}/.local/share/gnome-wallpaper-engine/backgrounds:/root/.local/share/gnome-wallpaper-engine/backgrounds:ro
+      - ./azur_multiverse_odyssey.mp4:/app/azur_multiverse_odyssey.mp4:ro
+    devices:
+      - /dev/dri:/dev/dri
+    ipc: host
+    network_mode: host
+
+  # Service 2: Video render pipeline (rebuilds 20-min master video from scratch)
+  wallpaper-render:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anime-wallpaper-renderer
+    entrypoint: ["python3", "/app/scripts/render_wallpaper.py"]
+    volumes:
+      - ./assets:/app/assets
+      - ./output:/output
+    devices:
+      - /dev/dri:/dev/dri
